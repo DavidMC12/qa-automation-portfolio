@@ -1,0 +1,14 @@
+node_modules/
+
+# Playwright
+web/playwright-report/
+web/test-results/
+web/blob-report/
+
+# Mobile evidence (generated in CI)
+mobile/artifacts/
+*.apk
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,13 @@
+# NOTE: text selectors below are a best-effort draft from public docs.
+# Confirm every selector against the real app with `maestro studio` (see mobile/README.md)
+# before relying on this flow in CI.
+appId: com.saucelabs.mydemoapp.android
+---
+- launchApp:
+    clearState: true
+- tapOn: "Username"
+- inputText: "bob@example.com"
+- tapOn: "Password"
+- inputText: "10203040"
+- tapOn: "LOGIN"
+- assertVisible: "PRODUCTS"
