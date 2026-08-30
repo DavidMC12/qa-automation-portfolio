@@ -61,14 +61,7 @@ jobs:
           disable-animations: true
           script: |
             adb install -r app.apk
-            mkdir -p mobile/artifacts/videos
-
-            "$HOME/.maestro/bin/maestro" test mobile/flows --format=JUNIT --output=mobile/artifacts/report.xml || true
-
-            find mobile/flows -name '*.yaml' ! -name 'config.yaml' | while read -r flow; do
-              name=$(basename "$flow" .yaml)
-              xvfb-run -a "$HOME/.maestro/bin/maestro" record "$flow" "mobile/artifacts/videos/$name.mp4" --local || true
-            done
+            bash mobile/scripts/record-flows.sh
 
       - name: Generate evidence gallery
         working-directory: mobile
