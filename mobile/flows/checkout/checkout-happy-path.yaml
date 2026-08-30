@@ -1,18 +1,49 @@
-# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
-# Composes login + add-to-cart via runFlow so this file only adds the checkout-specific steps.
+# Checkout is 3 screens (verified against the fragments' Java + layout XML):
+#   1. CheckoutInfoFragment (shipping address)  -> "To Payment"
+#   2. CheckoutFragment (card details)          -> "Review Order"
+#   3. PlaceOrderFragment (review)              -> "Place Order" -> CheckoutCompleteFragment
 appId: com.saucelabs.mydemoapp.android
 ---
-- runFlow: ../cart/add-to-cart.yaml
-- tapOn: "PROCEED TO CHECKOUT"
-- tapOn: "Full Name"
+- runFlow: ../login/valid-login.yaml
+- tapOn: "Sauce Labs Backpack"
+- tapOn: "Add to cart"
+- back
+- tapOn: "Tap to view you cart"
+- tapOn: "Proceed To Checkout"
+
+# Shipping address (CheckoutInfoFragment)
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/fullNameET"
 - inputText: "John Doe"
-- tapOn: "Address"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/address1ET"
 - inputText: "123 Main St"
-- tapOn: "State"
-- inputText: "CA"
-- tapOn: "Zip Code"
-- inputText: "12345"
-- tapOn: "CONTINUE CHECKOUT"
-- tapOn: "PLACE ORDER"
-- assertVisible:
-    text: ".*[Tt]hank you.*"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/cityET"
+- inputText: "San Francisco"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/zipET"
+- inputText: "94105"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/countryET"
+- inputText: "USA"
+- tapOn: "To Payment"
+
+# Card details (CheckoutFragment)
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/nameET"
+- inputText: "John Doe"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/cardNumberET"
+- inputText: "4111111111111111"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/expirationDateET"
+- inputText: "12/28"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/securityCodeET"
+- inputText: "123"
+- tapOn: "Review Order"
+
+# Review (PlaceOrderFragment)
+- tapOn: "Place Order"
+- assertVisible: "Thank you for your order"

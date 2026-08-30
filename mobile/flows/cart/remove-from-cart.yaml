@@ -1,6 +1,6 @@
-# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+# Selector verified against item_my_cart.xml (removeBt -> "Remove Item").
 appId: com.saucelabs.mydemoapp.android
 ---
 - runFlow: ../cart/add-to-cart.yaml
-- tapOn: "REMOVE"
+- tapOn: "Remove Item"
 - assertNotVisible: "Sauce Labs Backpack"
