@@ -1,7 +1,9 @@
-# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+# Selectors verified against fragment_product_detail.xml (add_to_cart button lives on this
+# screen, not on the catalog list item).
 appId: com.saucelabs.mydemoapp.android
 ---
-- runFlow: ../login/valid-login.yaml
+- launchApp:
+    clearState: true
 - tapOn: "Sauce Labs Backpack"
-- assertVisible: "ADD TO CART"
+- assertVisible: "Add to cart"
 - back

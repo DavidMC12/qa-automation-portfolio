@@ -1,10 +1,11 @@
-# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+# Selectors verified against fragment_product_detail.xml and menu_header_layout.xml
+# (cart icon content-description has an upstream typo: "Tap to view you cart").
 appId: com.saucelabs.mydemoapp.android
 ---
-- runFlow: ../login/valid-login.yaml
+- launchApp:
+    clearState: true
 - tapOn: "Sauce Labs Backpack"
-- tapOn: "ADD TO CART"
+- tapOn: "Add to cart"
 - back
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/cartIcon"
+- tapOn: "Tap to view you cart"
 - assertVisible: "Sauce Labs Backpack"

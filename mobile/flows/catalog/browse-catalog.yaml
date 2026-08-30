@@ -1,7 +1,9 @@
-# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+# Selectors verified against fragment_product_catalog.xml.
+# The catalog is the app's default screen — no login required to browse.
 appId: com.saucelabs.mydemoapp.android
 ---
-- runFlow: ../login/valid-login.yaml
-- assertVisible: "PRODUCTS"
+- launchApp:
+    clearState: true
+- assertVisible: "Products"
 - scroll
 - assertVisible: "Sauce Labs Backpack"

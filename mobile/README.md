@@ -3,20 +3,24 @@
 Target app: [Sauce Labs "My Demo App" (Android)](https://github.com/saucelabs/my-demo-app-android)
 - appId: `com.saucelabs.mydemoapp.android`
 - Pinned release: `2.2.0` (asset `mda-2.2.0-25.apk`)
-- Test accounts: `bob@example.com` / `10203040` (standard), `alice@example.com` / `10203040` (locked)
+- Test accounts (tap the pre-filled entry on the login screen to auto-fill both fields):
+  `bod@example.com` / `10203040` (standard — note the app's own spelling, not "bob"),
+  `alice@example.com` / `10203040` (locked out)
 
-## ⚠️ Before running these flows
+## Selector provenance
 
-The YAML files in `flows/` are a first draft written from public documentation, not from
-driving the real app. **Every flow is marked with a comment noting it needs verification.**
-Before trusting them in CI:
+The flows in `flows/` were written against the app's actual source (layout XML + fragment
+Java in `saucelabs/my-demo-app-android`, release 2.2.0), not guessed — each file has a comment
+naming the source files used. They were validated end-to-end in CI (`mobile-tests.yml`) against
+a real emulator. If a future app release changes the UI, re-derive selectors from the updated
+source, or use `maestro studio` against a running instance to confirm interactively.
 
-```bash
-maestro studio
-```
-
-Use Studio's inspector against a running instance of the app to confirm real element text/ids,
-then update the flows accordingly and remove the draft comments.
+Two things worth knowing about this app's flow, since they're easy to miss:
+- Login isn't the first screen — the app opens on the product catalog. Reach the login form via
+  the hamburger menu ("Tap to view menu" content-description) → "Log In".
+  "Add to cart" lives on the **product detail** screen, not on the catalog list item.
+- Checkout is three screens in sequence: shipping address ("To Payment") → card details
+  ("Review Order") → order review ("Place Order").
 
 ## Local setup
 
