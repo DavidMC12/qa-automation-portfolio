@@ -1,0 +1,10 @@
+# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+appId: com.saucelabs.mydemoapp.android
+---
+- runFlow: ../login/valid-login.yaml
+- tapOn: "Sauce Labs Backpack"
+- tapOn: "ADD TO CART"
+- back
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/cartIcon"
+- assertVisible: "Sauce Labs Backpack"

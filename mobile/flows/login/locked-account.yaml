@@ -1,0 +1,12 @@
+# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+appId: com.saucelabs.mydemoapp.android
+---
+- launchApp:
+    clearState: true
+- tapOn: "Username"
+- inputText: "alice@example.com"
+- tapOn: "Password"
+- inputText: "10203040"
+- tapOn: "LOGIN"
+- assertVisible:
+    text: ".*[Ll]ocked.*"

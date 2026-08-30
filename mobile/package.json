@@ -1,0 +1,13 @@
+{
+  "name": "mobile",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test scripts/generate-gallery.test.mjs",
+    "gallery": "node scripts/generate-gallery.mjs"
+  },
+  "devDependencies": {
+    "fast-xml-parser": "^4.5.0"
+  }
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="flows" tests="3" failures="1">
+    <testcase name="valid-login" classname="login" time="1.234" />
+    <testcase name="locked-account" classname="login" time="0.912" />
+    <testcase name="checkout-happy-path" classname="checkout" time="4.501">
+      <failure message="assertion failed">Expected visible: Thank you for your order!</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

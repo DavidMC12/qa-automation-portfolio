@@ -1,0 +1,18 @@
+# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+# Composes login + add-to-cart via runFlow so this file only adds the checkout-specific steps.
+appId: com.saucelabs.mydemoapp.android
+---
+- runFlow: ../cart/add-to-cart.yaml
+- tapOn: "PROCEED TO CHECKOUT"
+- tapOn: "Full Name"
+- inputText: "John Doe"
+- tapOn: "Address"
+- inputText: "123 Main St"
+- tapOn: "State"
+- inputText: "CA"
+- tapOn: "Zip Code"
+- inputText: "12345"
+- tapOn: "CONTINUE CHECKOUT"
+- tapOn: "PLACE ORDER"
+- assertVisible:
+    text: ".*[Tt]hank you.*"

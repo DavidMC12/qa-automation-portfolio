@@ -1,0 +1,7 @@
+# NOTE: draft selectors — confirm against the real app with `maestro studio` before CI use.
+appId: com.saucelabs.mydemoapp.android
+---
+- runFlow: ../login/valid-login.yaml
+- assertVisible: "PRODUCTS"
+- scroll
+- assertVisible: "Sauce Labs Backpack"
