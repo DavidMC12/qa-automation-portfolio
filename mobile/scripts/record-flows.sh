@@ -8,7 +8,9 @@ set -uo pipefail
 MAESTRO="$HOME/.maestro/bin/maestro"
 mkdir -p mobile/artifacts/videos
 
-mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' | sort)
+# `_`-prefixed paths hold reusable subflows (see flows/_shared/), which are only
+# meaningful when called with env vars from a real flow.
+mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' ! -path '*/_*' | sort)
 
 # `maestro test <dir>` does not discover flows nested in subdirectories, so
 # pass every flow file explicitly instead of pointing at the flows/ directory.

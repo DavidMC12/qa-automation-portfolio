@@ -5,7 +5,14 @@
 # Logging in first means the cart goes straight to checkout instead of detouring
 # through the login screen (see CartFragment: it branches on ST.isLogin).
 # The "billing address is the same as shipping" checkbox ships checked, so the
-# billing fields stay hidden and must NOT be filled.
+# billing fields stay hidden and must NOT be filled — note that fragment_checkout.xml
+# reuses the ids fullNameET/address1ET/cityET/zipET/countryET for that hidden
+# section, which is why the card screen is filled by its own nameET/card* ids.
+# Required fields are the ones CheckoutInfoFragment.validate() checks: full name,
+# address line 1, city, zip and country; address 2 and state are optional.
+# Every field goes through _shared/fill-field.yaml, which scrolls it into view and
+# clears the soft keyboard first — without that, the fields below the fold are
+# unreachable.
 appId: com.saucelabs.mydemoapp.android
 ---
 - runFlow: ../login/valid-login.yaml
@@ -22,22 +29,32 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn: "Proceed To Checkout"
 
 # 1. Shipping address
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/fullNameET"
-- inputText: "John Doe"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/address1ET"
-- inputText: "123 Main St"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/cityET"
-- inputText: "San Francisco"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/zipET"
-- inputText: "94105"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/countryET"
-- inputText: "USA"
-- hideKeyboard
+- assertVisible: "Enter a shipping address"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/fullNameET"
+      VALUE: "John Doe"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/address1ET"
+      VALUE: "123 Main St"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/cityET"
+      VALUE: "San Francisco"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/zipET"
+      VALUE: "94105"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/countryET"
+      VALUE: "USA"
 - scrollUntilVisible:
     element:
       text: "To Payment"
@@ -45,21 +62,30 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn: "To Payment"
 
 # 2. Card details
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/nameET"
-- inputText: "John Doe"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/cardNumberET"
-- inputText: "4111111111111111"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/expirationDateET"
-- inputText: "12/28"
-- tapOn:
-    id: "com.saucelabs.mydemoapp.android:id/securityCodeET"
-- inputText: "123"
-- hideKeyboard
+- assertVisible: "Enter a payment method"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/nameET"
+      VALUE: "John Doe"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/cardNumberET"
+      VALUE: "4111111111111111"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/expirationDateET"
+      VALUE: "12/28"
+- runFlow:
+    file: ../_shared/fill-field.yaml
+    env:
+      FIELD_ID: "com.saucelabs.mydemoapp.android:id/securityCodeET"
+      VALUE: "123"
 - tapOn: "Review Order"
 
 # 3. Review
+- assertVisible: "Review your order"
 - tapOn: "Place Order"
 - assertVisible: "Thank you for your order"
