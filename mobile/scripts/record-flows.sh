@@ -21,6 +21,13 @@ mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' ! -p
   --output=mobile/artifacts/report.xml \
   --debug-output=mobile/artifacts/debug || true
 
+# `--debug-output` has come back empty on this runner more than once, and without
+# it a crash-on-launch and a wrong selector produce the same JUnit report. The
+# device log tells them apart, and guarantees the debug artifact is never empty.
+mkdir -p mobile/artifacts/debug
+adb logcat -d > mobile/artifacts/debug/logcat.txt 2>&1 || true
+adb shell dumpsys window displays > mobile/artifacts/debug/displays.txt 2>&1 || true
+
 # The debug artifact came back empty once; list what Maestro actually wrote so a
 # failing run tells us where to look instead of silently uploading nothing.
 echo "--- debug output tree ---"

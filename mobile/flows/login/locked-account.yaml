@@ -1,8 +1,7 @@
 # alice@example.com is the locked-out account (strings.xml: alice_example_com_locked_out).
 appId: com.saucelabs.mydemoapp.android
 ---
-- launchApp:
-    clearState: true
+- runFlow: ../_shared/open-app.yaml
 - tapOn: "View menu"
 - tapOn: "Log In"
 - tapOn: "alice@example.com (locked out)"

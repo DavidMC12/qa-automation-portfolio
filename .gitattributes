@@ -1,0 +1,7 @@
+# The shell scripts and flow files here are executed by Linux CI runners, where a
+# stray CR breaks `set -o pipefail` and any argument at end of line. The repo is
+# already LF-clean via each contributor's core.autocrlf, but that is local config;
+# pinning it here makes the guarantee a property of the repo instead.
+*.sh    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf

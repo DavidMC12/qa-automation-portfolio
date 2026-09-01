@@ -1,0 +1,17 @@
+# Launches the app from a clean state and waits until the catalog is actually on
+# screen. Not a test on its own — the leading underscore keeps `record-flows.sh`
+# from running it as a standalone flow.
+#
+# CI drives a cold emulator that has only just finished booting, and the first
+# launch after `adb install` can take longer than Maestro's default element-lookup
+# timeout (~17s). When that happens `launchApp` still reports success and every
+# following step fails with a missing element, which reads like a broken selector
+# but isn't. extendedWaitUntil gives that first paint a generous budget and costs
+# nothing on the runs where the app is up immediately.
+appId: com.saucelabs.mydemoapp.android
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Products"
+    timeout: 60000
