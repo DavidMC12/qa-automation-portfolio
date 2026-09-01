@@ -1,10 +1,12 @@
-# "Add to cart" adds the item and stays on the detail screen, so we go `back` to the
-# catalog and open the cart from the header ("View cart" content-description).
+# Tap the product IMAGE (the only clickable view in the catalog card), add the
+# item, then open the cart from the header ("View cart" content-description).
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
-- tapOn: "Sauce Labs Backpack"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/productIV"
+    index: 0
 - scrollUntilVisible:
     element:
       text: "Add to cart"

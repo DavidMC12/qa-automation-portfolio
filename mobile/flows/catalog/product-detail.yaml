@@ -1,13 +1,18 @@
-# fragment_product_detail.xml wraps everything in a ScrollView and puts "Add to cart"
-# below the image, price and colour picker — it is off screen until we scroll.
+# ProductsAdapter attaches the click listener to the product IMAGE only
+# (productIV), not to the title — tapping the title text does nothing. Index 0 is
+# "Sauce Labs Backpack", as asserted by the app's own DashboardToCheckout test.
+# "Add to cart" then sits below the fold inside the detail screen's ScrollView.
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
-- tapOn: "Sauce Labs Backpack"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/productIV"
+    index: 0
 - scrollUntilVisible:
     element:
       text: "Add to cart"
     direction: DOWN
 - assertVisible: "Add to cart"
+- assertVisible: "Product Highlights"
 - back

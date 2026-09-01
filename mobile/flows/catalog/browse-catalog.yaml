@@ -1,14 +1,14 @@
 # The catalog is the app's default screen — no login needed to browse.
 # Assert the first product BEFORE scrolling: a blind `scroll` moves it off screen.
+# Product names come from BaseActivity.java (the Room seed data).
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
 - assertVisible: "Products"
 - assertVisible: "Sauce Labs Backpack"
-# The catalog list and its footer share one ScrollView, so reaching the footer
-# proves the whole list scrolled.
 - scrollUntilVisible:
     element:
-      text: "Sauce Labs All Rights Reserved"
+      text: "Sauce Labs Bike Light"
     direction: DOWN
+- assertVisible: "Sauce Labs Bike Light"

@@ -19,6 +19,12 @@ mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' | so
   --output=mobile/artifacts/report.xml \
   --debug-output=mobile/artifacts/debug || true
 
+# The debug artifact came back empty once; list what Maestro actually wrote so a
+# failing run tells us where to look instead of silently uploading nothing.
+echo "--- debug output tree ---"
+ls -R mobile/artifacts/debug 2>/dev/null | head -40 || echo "(no debug output written)"
+ls -R "$HOME/.maestro/tests" 2>/dev/null | head -20 || true
+
 for flow in "${FLOWS[@]}"; do
   name=$(basename "$flow" .yaml)
   xvfb-run -a "$MAESTRO" record "$flow" "mobile/artifacts/videos/$name.mp4" --local || true

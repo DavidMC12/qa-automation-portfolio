@@ -2,12 +2,16 @@
 #   1. CheckoutInfoFragment (shipping address) -> "To Payment"   (button is inside the scroll view)
 #   2. CheckoutFragment (card details)         -> "Review Order" (sticky button, always visible)
 #   3. PlaceOrderFragment (review)             -> "Place Order"  (sticky button, always visible)
-# The "billing address is the same as shipping" checkbox is checked by default, so the
+# Logging in first means the cart goes straight to checkout instead of detouring
+# through the login screen (see CartFragment: it branches on ST.isLogin).
+# The "billing address is the same as shipping" checkbox ships checked, so the
 # billing fields stay hidden and must NOT be filled.
 appId: com.saucelabs.mydemoapp.android
 ---
 - runFlow: ../login/valid-login.yaml
-- tapOn: "Sauce Labs Backpack"
+- tapOn:
+    id: "com.saucelabs.mydemoapp.android:id/productIV"
+    index: 0
 - scrollUntilVisible:
     element:
       text: "Add to cart"
