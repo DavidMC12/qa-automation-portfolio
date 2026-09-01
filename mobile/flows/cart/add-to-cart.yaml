@@ -1,11 +1,15 @@
-# Selectors verified against fragment_product_detail.xml and menu_header_layout.xml
-# (cart icon content-description has an upstream typo: "Tap to view you cart").
+# "Add to cart" adds the item and stays on the detail screen, so we go `back` to the
+# catalog and open the cart from the header ("View cart" content-description).
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
 - tapOn: "Sauce Labs Backpack"
+- scrollUntilVisible:
+    element:
+      text: "Add to cart"
+    direction: DOWN
 - tapOn: "Add to cart"
 - back
-- tapOn: "Tap to view you cart"
+- tapOn: "View cart"
 - assertVisible: "Sauce Labs Backpack"

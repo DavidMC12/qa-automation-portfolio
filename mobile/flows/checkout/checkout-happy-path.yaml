@@ -1,17 +1,23 @@
-# Checkout is 3 screens (verified against the fragments' Java + layout XML):
-#   1. CheckoutInfoFragment (shipping address)  -> "To Payment"
-#   2. CheckoutFragment (card details)          -> "Review Order"
-#   3. PlaceOrderFragment (review)              -> "Place Order" -> CheckoutCompleteFragment
+# Checkout is 3 screens (verified against the fragments' Java + layout XML at tag 2.2.0):
+#   1. CheckoutInfoFragment (shipping address) -> "To Payment"   (button is inside the scroll view)
+#   2. CheckoutFragment (card details)         -> "Review Order" (sticky button, always visible)
+#   3. PlaceOrderFragment (review)             -> "Place Order"  (sticky button, always visible)
+# The "billing address is the same as shipping" checkbox is checked by default, so the
+# billing fields stay hidden and must NOT be filled.
 appId: com.saucelabs.mydemoapp.android
 ---
 - runFlow: ../login/valid-login.yaml
 - tapOn: "Sauce Labs Backpack"
+- scrollUntilVisible:
+    element:
+      text: "Add to cart"
+    direction: DOWN
 - tapOn: "Add to cart"
 - back
-- tapOn: "Tap to view you cart"
+- tapOn: "View cart"
 - tapOn: "Proceed To Checkout"
 
-# Shipping address (CheckoutInfoFragment)
+# 1. Shipping address
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/fullNameET"
 - inputText: "John Doe"
@@ -27,9 +33,14 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/countryET"
 - inputText: "USA"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      text: "To Payment"
+    direction: DOWN
 - tapOn: "To Payment"
 
-# Card details (CheckoutFragment)
+# 2. Card details
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/nameET"
 - inputText: "John Doe"
@@ -42,8 +53,9 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/securityCodeET"
 - inputText: "123"
+- hideKeyboard
 - tapOn: "Review Order"
 
-# Review (PlaceOrderFragment)
+# 3. Review
 - tapOn: "Place Order"
 - assertVisible: "Thank you for your order"

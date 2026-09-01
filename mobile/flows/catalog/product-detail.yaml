@@ -1,9 +1,13 @@
-# Selectors verified against fragment_product_detail.xml (add_to_cart button lives on this
-# screen, not on the catalog list item).
+# fragment_product_detail.xml wraps everything in a ScrollView and puts "Add to cart"
+# below the image, price and colour picker — it is off screen until we scroll.
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
 - tapOn: "Sauce Labs Backpack"
+- scrollUntilVisible:
+    element:
+      text: "Add to cart"
+    direction: DOWN
 - assertVisible: "Add to cart"
 - back

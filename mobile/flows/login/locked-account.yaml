@@ -1,10 +1,9 @@
-# Selectors verified against the app's source (saucelabs/my-demo-app-android, release 2.2.0):
-# fragment_login.xml (strings: alice_example_com_locked_out, soory_this_user_has_been_locked_out).
+# alice@example.com is the locked-out account (strings.xml: alice_example_com_locked_out).
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
-- tapOn: "Tap to view menu"
+- tapOn: "View menu"
 - tapOn: "Log In"
 - tapOn: "alice@example.com (locked out)"
 - tapOn: "Tap to login with given credentials"

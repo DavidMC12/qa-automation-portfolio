@@ -75,6 +75,17 @@ jobs:
           path: mobile/artifacts/gallery
           retention-days: 30
 
+      # Screenshots + view-hierarchy dumps for failing steps. Only useful when a
+      # flow breaks, so it is kept out of the published Pages site.
+      - name: Upload Maestro debug output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-debug
+          path: mobile/artifacts/debug
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Fail job if any flow failed
         run: |
           if grep -q '<failure' mobile/artifacts/report.xml; then

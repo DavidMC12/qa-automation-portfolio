@@ -1,9 +1,14 @@
-# Selectors verified against fragment_product_catalog.xml.
-# The catalog is the app's default screen — no login required to browse.
+# The catalog is the app's default screen — no login needed to browse.
+# Assert the first product BEFORE scrolling: a blind `scroll` moves it off screen.
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
 - assertVisible: "Products"
-- scroll
 - assertVisible: "Sauce Labs Backpack"
+# The catalog list and its footer share one ScrollView, so reaching the footer
+# proves the whole list scrolled.
+- scrollUntilVisible:
+    element:
+      text: "Sauce Labs All Rights Reserved"
+    direction: DOWN
