@@ -12,7 +12,12 @@ mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' | so
 
 # `maestro test <dir>` does not discover flows nested in subdirectories, so
 # pass every flow file explicitly instead of pointing at the flows/ directory.
-"$MAESTRO" test "${FLOWS[@]}" --format=JUNIT --output=mobile/artifacts/report.xml || true
+# --debug-output keeps the screenshots and view-hierarchy dumps of every failing
+# step, which is the only way to diagnose selector problems from CI logs alone.
+"$MAESTRO" test "${FLOWS[@]}" \
+  --format=JUNIT \
+  --output=mobile/artifacts/report.xml \
+  --debug-output=mobile/artifacts/debug || true
 
 for flow in "${FLOWS[@]}"; do
   name=$(basename "$flow" .yaml)

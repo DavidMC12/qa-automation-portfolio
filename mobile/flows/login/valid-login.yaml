@@ -1,11 +1,13 @@
-# Selectors verified against the app's source (saucelabs/my-demo-app-android, release 2.2.0):
-# fragment_login.xml, activity_main.xml, menu_header_layout.xml, MainActivity.java.
+# Selectors taken from the app's source at tag 2.2.0 (the pinned APK):
+# menu_header_layout.xml + strings.xml -> the menu icon's content-description is "View menu".
+# The app opens on the catalog; login lives behind the drawer menu.
 appId: com.saucelabs.mydemoapp.android
 ---
 - launchApp:
     clearState: true
-- tapOn: "Tap to view menu"
+- tapOn: "View menu"
 - tapOn: "Log In"
+# Tapping a listed username auto-fills both username and password.
 - tapOn: "bod@example.com"
 - tapOn: "Tap to login with given credentials"
 - assertVisible: "Products"
