@@ -2,20 +2,24 @@
 # underscore keeps `record-flows.sh` from running it as a standalone flow.
 #
 # Every checkout screen is one long NestedScrollView, so a field further down the
-# form is simply not on screen, and the soft keyboard opened by the previous field
-# hides whatever is left. Both are handled here rather than at each call site:
-# dismiss the keyboard first, so the form is at its full height and the field sits
-# where it appears, then scroll it fully into view, tap, type, and dismiss again.
+# form is simply off screen, and Maestro only matches what is actually on screen —
+# that is the whole reason a plain `tapOn` on cityET reported "Element not found".
+# Scrolling the field into view first is the fix.
 #
-# Deliberately no `centerElement: true`: Orchestra only ever swipes in the given
-# direction, so for a field already above the centre (fullNameET, at the top of the
-# form) scrolling DOWN pushes it off screen instead of centring it, and the command
-# fails with "No visible element found" on a field that was visible to begin with.
+# Deliberately NO `hideKeyboard` here. On Android that command is implemented as
+# `input keyevent 4` — a real BACK press that happens to dismiss the keyboard as a
+# side effect. With no keyboard up it is just Back, so calling it on arrival at the
+# shipping form navigated to the cart and every field then reported "No visible
+# element found". Nothing here needs it: `scrollUntilVisible` scrolls the form
+# whether or not a keyboard is showing.
+#
+# Deliberately no `centerElement: true` either — Orchestra only swipes in the given
+# direction, so for a field already above the centre it scrolls DOWN, away from the
+# target, instead of centring it.
 #
 # env: FIELD_ID — fully qualified resource id, VALUE — text to type.
 appId: com.saucelabs.mydemoapp.android
 ---
-- hideKeyboard
 - scrollUntilVisible:
     element:
       id: "${FIELD_ID}"
@@ -23,4 +27,3 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn:
     id: "${FIELD_ID}"
 - inputText: "${VALUE}"
-- hideKeyboard
