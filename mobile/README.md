@@ -15,12 +15,23 @@ naming the source files used. They were validated end-to-end in CI (`mobile-test
 a real emulator. If a future app release changes the UI, re-derive selectors from the updated
 source, or use `maestro studio` against a running instance to confirm interactively.
 
-Two things worth knowing about this app's flow, since they're easy to miss:
+Four things worth knowing about this app, since each one cost a CI cycle to find:
 - Login isn't the first screen — the app opens on the product catalog. Reach the login form via
-  the hamburger menu ("Tap to view menu" content-description) → "Log In".
-  "Add to cart" lives on the **product detail** screen, not on the catalog list item.
-- Checkout is three screens in sequence: shipping address ("To Payment") → card details
-  ("Review Order") → order review ("Place Order").
+  the hamburger menu ("View menu" content-description) → "Log In".
+- **Only the product image is clickable in the catalog.** `ProductsAdapter` attaches the click
+  listener to `productIV`; tapping the product *title* silently does nothing. Flows therefore tap
+  `id: ...:id/productIV` with an index, not the product name.
+- "Add to cart" lives on the **product detail** screen, below the fold inside a `ScrollView`, so
+  it needs `scrollUntilVisible`. The app's own `DashboardToCheckout` Espresso test uses
+  `scrollTo()` there for the same reason.
+- Checkout is three screens in sequence: shipping address ("To Payment", also inside the scroll
+  view) → card details ("Review Order") → order review ("Place Order"). The "billing address is
+  the same as shipping" checkbox ships **checked**, so those fields stay hidden and unfilled.
+
+A trap worth flagging: several content-descriptions have resource *names* that read like a
+sentence but hold a shorter *value* — `tap_to_view_menu` is `"View menu"` and
+`tap_to_view_you_cart` is `"View cart"`. Always read the value in `strings.xml`, never infer it
+from the resource id.
 
 ## Local setup
 
