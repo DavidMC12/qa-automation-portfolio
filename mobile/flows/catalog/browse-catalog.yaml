@@ -3,8 +3,7 @@
 # Product names come from BaseActivity.java (the Room seed data).
 appId: com.saucelabs.mydemoapp.android
 ---
-- launchApp:
-    clearState: true
+- runFlow: ../_shared/open-app.yaml
 - assertVisible: "Products"
 - assertVisible: "Sauce Labs Backpack"
 - scrollUntilVisible:

@@ -2,8 +2,7 @@
 # item, then open the cart from the header ("View cart" content-description).
 appId: com.saucelabs.mydemoapp.android
 ---
-- launchApp:
-    clearState: true
+- runFlow: ../_shared/open-app.yaml
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/productIV"
     index: 0

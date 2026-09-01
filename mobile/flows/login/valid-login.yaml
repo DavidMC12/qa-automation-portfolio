@@ -3,8 +3,7 @@
 # The app opens on the catalog; login lives behind the drawer menu.
 appId: com.saucelabs.mydemoapp.android
 ---
-- launchApp:
-    clearState: true
+- runFlow: ../_shared/open-app.yaml
 - tapOn: "View menu"
 - tapOn: "Log In"
 # Tapping a listed username auto-fills both username and password.

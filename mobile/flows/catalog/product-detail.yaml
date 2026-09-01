@@ -7,8 +7,7 @@
 # never on screen at the same time on a phone: each needs its own scroll.
 appId: com.saucelabs.mydemoapp.android
 ---
-- launchApp:
-    clearState: true
+- runFlow: ../_shared/open-app.yaml
 - tapOn:
     id: "com.saucelabs.mydemoapp.android:id/productIV"
     index: 0
