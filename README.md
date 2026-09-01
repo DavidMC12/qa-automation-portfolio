@@ -2,7 +2,7 @@
 
 Cross-platform end-to-end test automation with continuous execution and real evidence, published free of charge with no third-party accounts.
 
-**Live reports:** _publish this repo and enable GitHub Pages (Settings → Pages → Source: GitHub Actions) to get a public URL here, e.g. `https://<your-username>.github.io/<repo>/`_
+**Live reports:** <https://davidmc12.github.io/qa-automation-portfolio/> — [Playwright report](https://davidmc12.github.io/qa-automation-portfolio/web/) · [Maestro evidence gallery](https://davidmc12.github.io/qa-automation-portfolio/mobile/)
 
 ## Stack
 

@@ -1,0 +1,22 @@
+# Fills one text field of the checkout forms. Not a test on its own — the leading
+# underscore keeps `record-flows.sh` from running it as a standalone flow.
+#
+# Every checkout screen is one long NestedScrollView, so a field further down the
+# form is simply not on screen, and the soft keyboard opened by the previous field
+# hides whatever is left. Both are handled here rather than at each call site:
+# dismiss the keyboard, scroll the target into the middle of the screen (so the
+# keyboard cannot cover it once it reopens), type, then dismiss again.
+#
+# env: FIELD_ID — fully qualified resource id, VALUE — text to type.
+appId: com.saucelabs.mydemoapp.android
+---
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "${FIELD_ID}"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "${FIELD_ID}"
+- inputText: "${VALUE}"
+- hideKeyboard
