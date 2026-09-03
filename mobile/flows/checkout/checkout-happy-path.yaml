@@ -10,9 +10,10 @@
 # section, which is why the card screen is filled by its own nameET/card* ids.
 # Required fields are the ones CheckoutInfoFragment.validate() checks: full name,
 # address line 1, city, zip and country; address 2 and state are optional.
-# Every field goes through _shared/fill-field.yaml, which scrolls it into view and
-# clears the soft keyboard first — without that, the fields below the fold are
-# unreachable.
+# Every field goes through _shared/fill-field.yaml, which scrolls it into view,
+# types, and only THEN dismisses the keyboard. That order is load-bearing — see
+# that file for why. Without it the fields below the fold are unreachable, because
+# the keyboard both hides them and swallows the scroll gesture.
 appId: com.saucelabs.mydemoapp.android
 ---
 - runFlow: ../login/valid-login.yaml

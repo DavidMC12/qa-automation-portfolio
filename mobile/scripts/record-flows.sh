@@ -8,6 +8,13 @@ set -uo pipefail
 MAESTRO="$HOME/.maestro/bin/maestro"
 mkdir -p mobile/artifacts/videos
 
+# `adb logcat -d` at the end of the run came back holding only the last 17 seconds
+# of a 40-minute job — the default ring buffer had rolled over many times over, so
+# the dump never covered the failure it was captured for. Grow it and clear it up
+# front so the tail dump below spans the whole suite.
+adb logcat -G 16M || true
+adb logcat -c || true
+
 # `_`-prefixed paths hold reusable subflows (see flows/_shared/), which are only
 # meaningful when called with env vars from a real flow.
 mapfile -t FLOWS < <(find mobile/flows -name '*.yaml' ! -name 'config.yaml' ! -path '*/_*' | sort)
