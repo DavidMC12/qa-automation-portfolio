@@ -47,3 +47,18 @@ test('buildGalleryHtml marks failed testcases distinctly from passed ones', () =
   assert.match(html, /class="status-pass"[^>]*>PASS/);
   assert.match(html, /class="status-fail"[^>]*>FAIL/);
 });
+
+test('buildGalleryHtml shows only the name when classname equals name (real Maestro output)', () => {
+  const cases = parseReport(sampleXml);
+  const html = buildGalleryHtml(cases, []);
+
+  assert.match(html, /<td>valid-login<\/td>/);
+  assert.doesNotMatch(html, /valid-login\/valid-login/);
+});
+
+test('buildGalleryHtml still joins classname/name when they differ', () => {
+  const cases = parseReport(sampleXml);
+  const html = buildGalleryHtml(cases, []);
+
+  assert.match(html, /<td>login-suite\/locked-account<\/td>/);
+});
