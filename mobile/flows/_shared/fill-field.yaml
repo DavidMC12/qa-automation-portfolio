@@ -2,20 +2,37 @@
 # underscore keeps `record-flows.sh` from running it as a standalone flow.
 #
 # Every checkout screen is one long NestedScrollView, so a field further down the
-# form is simply off screen, and Maestro only matches what is actually on screen —
-# that is the whole reason a plain `tapOn` on cityET reported "Element not found".
-# Scrolling the field into view first is the fix.
+# form is simply off screen, and Maestro only matches what is actually on screen.
+# Scrolling the field into view first is what makes the lower fields reachable.
 #
-# Deliberately NO `hideKeyboard` here. On Android that command is implemented as
-# `input keyevent 4` — a real BACK press that happens to dismiss the keyboard as a
-# side effect. With no keyboard up it is just Back, so calling it on arrival at the
-# shipping form navigated to the cart and every field then reported "No visible
-# element found". Nothing here needs it: `scrollUntilVisible` scrolls the form
-# whether or not a keyboard is showing.
+# The ORDER of these steps is the whole point, and it was paid for twice:
 #
-# Deliberately no `centerElement: true` either — Orchestra only swipes in the given
-# direction, so for a field already above the centre it scrolls DOWN, away from the
-# target, instead of centring it.
+#     scrollUntilVisible -> tapOn -> inputText -> hideKeyboard
+#
+# `hideKeyboard` on Android is not a keyboard toggle. AndroidDriver implements it
+# as `input keyevent 4` — a real BACK press that merely happens to dismiss the
+# keyboard when one is up. Called FIRST, with no keyboard open, it is just Back:
+# it navigated away from the shipping form and every field then reported
+# "No visible element found". Called LAST it is safe, because `inputText` has
+# just opened the keyboard, so the Back press is guaranteed to be consumed by it.
+#
+# It has to be here at all because the soft keyboard covers the bottom ~45% of a
+# pixel_5, and `scrollUntilVisible` swipes from the centre of the SCREEN, not of
+# the app viewport. With the keyboard up, that centre lands ON the keyboard, so
+# the swipe never reaches the form at all: zipET sat under the keyboard while
+# Maestro swiped uselessly for the full 20s timeout — the recorded video shows
+# the form frozen on the identical pixels from 0:50 to 1:08. Dismissing the
+# keyboard after each field restores the full-height viewport, so the next
+# field's scroll lands on the form instead of on the keys.
+#
+# Deliberately no `centerElement: true` — Orchestra only swipes in the given
+# direction, so for a field already above the centre it scrolls DOWN, away from
+# the target, instead of centring it.
+#
+# The closing assert is the tripwire for that Back-press failure mode: if
+# `hideKeyboard` ever navigates instead of closing a keyboard, this fails at once
+# and names the field, instead of leaving the NEXT field to die in a 20s timeout
+# that says nothing about the real cause.
 #
 # env: FIELD_ID — fully qualified resource id, VALUE — text to type.
 appId: com.saucelabs.mydemoapp.android
@@ -27,3 +44,6 @@ appId: com.saucelabs.mydemoapp.android
 - tapOn:
     id: "${FIELD_ID}"
 - inputText: "${VALUE}"
+- hideKeyboard
+- assertVisible:
+    id: "${FIELD_ID}"

@@ -32,13 +32,21 @@ Five things worth knowing about this app, since each one cost a CI cycle to find
   `ScrollView` may each need their own `scrollUntilVisible` (on the detail screen, "Add to cart"
   and "Product Highlights" are never both visible). On the checkout forms the keyboard opened by
   one field covers the next, which is why every field goes through `flows/_shared/fill-field.yaml`
-  — it dismisses the keyboard, centres the field, types, and dismisses again.
+  — it scrolls the field into view, taps, types, and only then dismisses the keyboard.
 
-Three traps worth knowing, none of which reproduces on a warm local emulator:
+Four traps worth knowing, none of which reproduces on a warm local emulator:
 - `hideKeyboard` is a **Back press** on Android (`AndroidDriver` runs `input keyevent 4`), so it
   dismisses the keyboard only when one is actually up. Call it when there is no keyboard and it
   navigates the app backwards instead — which looks like every field on the next screen suddenly
-  having a broken selector. Prefer `scrollUntilVisible`, which works with or without a keyboard.
+  having a broken selector. The rule that follows: never call it *before* typing, only *after*,
+  where `inputText` has just guaranteed a keyboard is open.
+- **The soft keyboard swallows the scroll gesture, not just the pixels.** `scrollUntilVisible`
+  swipes from the centre of the *screen*, not of the app's remaining viewport. With a keyboard up
+  that centre lands on the keys, so the swipe never reaches the `ScrollView` at all: the step
+  burns its full 20s timeout while the form sits perfectly still. This is why dismissing the
+  keyboard after each field is load-bearing rather than cosmetic — and why "it scrolls, it just
+  doesn't scroll far enough" is the wrong diagnosis. The recorded video is the fastest way to
+  tell the two apart: compare two frames ten seconds apart and see whether anything moved.
 - `scrollUntilVisible` only ever swipes in the direction you give it, so `centerElement: true`
   is actively harmful for an element that is already **above** the centre — scrolling `DOWN`
   pushes it off screen and the step fails with "No visible element found" on a field that was
