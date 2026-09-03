@@ -49,10 +49,14 @@ export function buildGalleryHtml(testcases, videoFilenames) {
       const failure = tc.failureMessage
         ? `<pre class="failure">${escapeHtml(tc.failureMessage)}</pre>`
         : '';
+      const label =
+        tc.classname && tc.classname !== tc.name
+          ? `${escapeHtml(tc.classname)}/${escapeHtml(tc.name)}`
+          : escapeHtml(tc.name);
 
       return `
         <tr>
-          <td>${escapeHtml(tc.classname)}/${escapeHtml(tc.name)}</td>
+          <td>${label}</td>
           <td class="${statusClass}">${statusLabel}</td>
           <td>${tc.time.toFixed(2)}s</td>
           <td>${media}${failure}</td>
