@@ -72,35 +72,70 @@ curl -fsSL "https://get.maestro.mobile.dev" | bash
 #    (from https://github.com/saucelabs/my-demo-app-android/releases/tag/2.2.0)
 adb install -r mda-2.2.0-25.apk
 
-# 3. Run the full suite, exactly as CI does. `maestro test flows` is NOT equivalent:
-#    it does not recurse into subdirectories, and it would also pick up the
-#    `_shared/` helper subflow, which is meaningless without its env vars.
-bash scripts/record-flows.sh   # run from the repo root
+# 3. Run the full suite and record a video of every flow, exactly as CI does.
+#    `maestro test flows` is NOT equivalent: it does not recurse into
+#    subdirectories, and it would also pick up the `_shared/` helper subflow,
+#    which is meaningless without its env vars. Run from the repo root.
+bash mobile/scripts/record-flows.sh
 
-# 4. Record a video of one flow (Beta, local rendering — no cloud account)
-maestro record flows/checkout/checkout-happy-path.yaml artifacts/videos/checkout-happy-path.mp4 --local
+# 4. Run a single flow
+maestro test mobile/flows/checkout/checkout-happy-path.yaml
 ```
 
-## Fallback: `adb shell screenrecord`
+## How the evidence is recorded
 
-`maestro record --local` is Beta. If it proves unreliable (especially in headless CI), fall back
-to Android's own screen recorder, which is stable and needs no Maestro-specific support:
+Each flow runs once, wrapped by `adb shell screenrecord`, so the video shows the exact
+execution that produced the pass/fail verdict.
 
-```bash
-adb shell screenrecord /sdcard/flow.mp4 &
-RECORD_PID=$!
-maestro test flows/checkout/checkout-happy-path.yaml
-kill -INT $RECORD_PID
-adb pull /sdcard/flow.mp4 artifacts/videos/checkout-happy-path.mp4
-```
+This replaced `maestro record --local`, which replays a flow under xvfb to render a video. On a
+green CI run the replay accounted for roughly 46 of the job's 51 minutes, against about 3.5
+minutes for the seven flows themselves — so the job went from "an hour" to "a coffee".
+`screenrecord` caps a file at 180 seconds; the longest flow (checkout) takes under two.
 
 ## Generating the evidence gallery
 
-After a run produces `artifacts/report.xml` and `artifacts/videos/*.mp4`:
+After a run produces `artifacts/report/*.xml` (one JUnit file per flow) and
+`artifacts/videos/*.mp4`:
 
 ```bash
-npm run gallery
+cd mobile && npm run gallery
 ```
 
-This reads the JUnit report and the recorded videos and emits `artifacts/gallery/index.html` —
-the page published to GitHub Pages under `/mobile/`.
+This merges the per-flow reports and the recorded videos into
+`artifacts/gallery/index.html` — the page published to GitHub Pages under `/mobile/`. An optional
+fourth argument sets the page title (`generate-gallery.mjs <reports> <videos> <out> "<title>"`),
+which is how the iOS gallery gets its own heading.
+
+## iOS
+
+Target app: [Sauce Labs "My Demo App" (iOS)](https://github.com/saucelabs/my-demo-app-ios)
+- bundle id: `com.saucelabs.mydemo.app.ios`
+- Pinned release: `2.3.0`, asset `SauceLabs-Demo-App.Simulator.zip` (a simulator build with both
+  `arm64` and `x86_64` slices, so it runs on Apple-silicon runners)
+- Flows live in `flows-ios/` and mirror the Android scenarios.
+
+### What differs from Android
+
+- **Selectors are accessibility identifiers**, not visible text or resource ids. The storyboards
+  at tag 2.3.0 set them (`Catalog-screen`, `Cart-tab-item`, `ProceedToCheckout`, ...), and the
+  app's own XCUITest page objects (`MyDemoAppUITests/PageObjects/PageObject.swift`) use the same
+  ones.
+- **There is no locked-out account.** `LoginViewController` accepts any non-empty username and
+  password, so `login/missing-username.yaml` covers the validation path instead.
+- **Product names are runtime accessibility labels.** The storyboard sets the identifier
+  `Product Name` on every card and `CatalogViewController.cellForItemAt` copies the real name
+  into `accessibilityLabel`. Match the identifier to tap "the first product" and the label to
+  assert a specific one.
+- **Recording uses `xcrun simctl io recordVideo`**, wrapped around each flow and stopped with
+  SIGINT (a plain kill leaves an unplayable file). One JUnit file is written per flow.
+
+### Running locally
+
+Needs macOS with Xcode and the Maestro CLI.
+
+```bash
+gh release download 2.3.0 -R saucelabs/my-demo-app-ios -p 'SauceLabs-Demo-App.Simulator.zip' -O ios-app.zip
+unzip -q ios-app.zip -d ios-app
+bash mobile/scripts/boot-ios-simulator.sh "ios-app/Payload/My Demo App.app"   # exports IOS_UDID in CI
+IOS_UDID=<printed UDID> bash mobile/scripts/record-flows-ios.sh
+```
