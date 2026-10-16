@@ -1,0 +1,6 @@
+# EXPERIMENT. Types into a field and asks Maestro to hide the keyboard.
+appId: com.saucelabs.mydemo.app.ios
+---
+- tapOn: "${FIELD}"
+- inputText: "${VALUE}"
+- hideKeyboard

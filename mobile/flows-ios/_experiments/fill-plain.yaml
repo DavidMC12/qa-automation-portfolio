@@ -1,0 +1,5 @@
+# EXPERIMENT. Types into a field and leaves the keyboard alone.
+appId: com.saucelabs.mydemo.app.ios
+---
+- tapOn: "${FIELD}"
+- inputText: "${VALUE}"

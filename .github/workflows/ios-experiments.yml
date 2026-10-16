@@ -1,0 +1,63 @@
+name: iOS keyboard experiments (temporary)
+
+# The iOS app has no way to dismiss its keyboard, which leaves the checkout
+# buttons unreachable. Compares ways around that. Removed once one is chosen.
+on:
+  push:
+    branches: [feat/mobile-ios]
+    paths:
+      - 'mobile/flows-ios/_experiments/**'
+      - '.github/workflows/ios-experiments.yml'
+
+jobs:
+  experiment:
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [hwkbd, ipad]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Maestro CLI
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Download pinned demo app (simulator build)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download 2.3.0 -R saucelabs/my-demo-app-ios -p 'SauceLabs-Demo-App.Simulator.zip' -O ios-app.zip
+          unzip -q ios-app.zip -d ios-app
+
+      - name: Boot simulator and install the app
+        env:
+          IOS_HARDWARE_KEYBOARD: ${{ matrix.variant == 'hwkbd' && '1' || '0' }}
+          IOS_DEVICE_KIND: ${{ matrix.variant == 'ipad' && 'iPad' || 'iPhone' }}
+        run: bash mobile/scripts/boot-ios-simulator.sh "ios-app/Payload/My Demo App.app"
+
+      - name: Run the checkout variant
+        run: |
+          mkdir -p out
+          xcrun simctl io "$IOS_UDID" recordVideo --codec=h264 --force out/${{ matrix.variant }}.mp4 > /dev/null 2>&1 &
+          REC=$!
+          sleep 2
+          "$HOME/.maestro/bin/maestro" --device "$IOS_UDID" test mobile/flows-ios/_experiments/checkout-${{ matrix.variant }}.yaml \
+            --debug-output=out/debug > out/maestro.log 2>&1 || true
+          kill -INT $REC || true
+          wait $REC || true
+          xcrun simctl io "$IOS_UDID" screenshot out/final.png || true
+          tail -40 out/maestro.log
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: experiment-${{ matrix.variant }}
+          path: out
+          retention-days: 7

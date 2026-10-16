@@ -1,0 +1,84 @@
+# Checkout is 3 screens after a login that the cart forces (ProceedToCheckout
+# routes through LoginViewController when ST.isLogin is false):
+#   Shipping address -> "To Payment"; card details -> "Review Order";
+#   review -> "Place Order"; then CheckoutComplete.
+# Fields are filled through _shared/fill-field.yaml, which closes the keyboard
+# after each one — see that file for what happens when it doesn't.
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "Product Name"
+    index: 0
+- tapOn:
+    id: "AddToCart"
+- tapOn:
+    id: "Cart-tab-item"
+- tapOn:
+    id: "ProceedToCheckout"
+
+# Login (reached from the cart, so it continues to the shipping form).
+- tapOn: "bob@example.com"
+# The login screen has three elements named "Login" in tree order: the page
+# header, the green button, and the button's own label. Index 1 is the button.
+- tapOn:
+    text: "Login"
+    index: 1
+
+# 1. Shipping address
+- assertVisible: "Enter a shipping address"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "Rebecca Winter"
+      VALUE: "John Doe"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "Mandorley 112"
+      VALUE: "123 Main St"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "Truro"
+      VALUE: "San Francisco"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "89750"
+      VALUE: "94105"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "United Kingdom"
+      VALUE: "USA"
+- tapOn: "To Payment"
+
+# 2. Card details
+- assertVisible: "Enter a payment method"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "Maxim Winter"
+      VALUE: "John Doe"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "3258 1265 7568 7896"
+      VALUE: "4111111111111111"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "03/25"
+      VALUE: "12/28"
+- runFlow:
+    file: fill-hide.yaml
+    env:
+      FIELD: "123"
+      VALUE: "123"
+- tapOn: "Review Order"
+
+# 3. Review
+- assertVisible: "Review your order"
+- tapOn: "Place Order"
+- assertVisible: "Checkout Complete"
