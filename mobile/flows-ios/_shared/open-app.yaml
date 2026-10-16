@@ -1,0 +1,15 @@
+# Launches the app from a clean state and waits until the catalog is on screen.
+# Not a test on its own — the leading underscore keeps record-flows-ios.sh from
+# running it as a standalone flow.
+#
+# Selectors on iOS come from the app's accessibility identifiers (set in the
+# storyboards at tag 2.3.0 and used by the app's own XCUITest page objects), not
+# from visible text: "Catalog-screen" is the root view of the product list.
+appId: com.saucelabs.mydemo.app.ios
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "Catalog-screen"
+    timeout: 60000

@@ -1,0 +1,6 @@
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../cart/add-to-cart.yaml
+- tapOn: "Remove Item"
+- assertNotVisible: "Sauce Labs Backpack - Black"
+- assertVisible: "No Items"

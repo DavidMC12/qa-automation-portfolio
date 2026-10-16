@@ -1,0 +1,14 @@
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "Product Name"
+    index: 0
+- assertVisible:
+    id: "ProductDetails-screen"
+- assertVisible: "Sauce Labs Backpack - Black"
+- assertVisible: "Add To Cart"
+- scrollUntilVisible:
+    element:
+      text: "Product Highlights"
+    direction: DOWN

@@ -1,0 +1,37 @@
+# The iOS counterpart of the web checkout-validation specs.
+#
+# ShippingAddressViewController.toPaymentButton checks the required fields in a
+# fixed order — full name, address, city, zip, country — and shows an alert for
+# the first one that is empty. With the form untouched that is the full name.
+#
+# This is deliberately the only checkout scenario on iOS: filling the form and
+# going on to payment is not automatable here, because the app never dismisses
+# its keyboard and the "To Payment" button sits underneath it. See "Checkout
+# happy path is not automated on iOS" in mobile/README.md for what was tried.
+#
+# Checkout needs a session, so the cart routes through the login screen first
+# (ProceedToCheckout -> LoginViewController -> ShippingAddressViewController).
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "Product Name"
+    index: 0
+- tapOn:
+    id: "AddToCart"
+- tapOn:
+    id: "Cart-tab-item"
+- tapOn:
+    id: "ProceedToCheckout"
+
+# The login screen has three elements named "Login" in tree order: the page
+# header, the green button, and the button's own label. Index 1 is the button.
+- tapOn: "bob@example.com"
+- tapOn:
+    text: "Login"
+    index: 1
+
+- assertVisible: "Enter a shipping address"
+- tapOn: "To Payment"
+- assertVisible: "Validation Error!"
+- assertVisible: "Please provide your full name."

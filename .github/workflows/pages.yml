@@ -21,8 +21,11 @@ jobs:
   mobile:
     uses: ./.github/workflows/mobile-tests.yml
 
+  mobile-ios:
+    uses: ./.github/workflows/mobile-ios-tests.yml
+
   publish:
-    needs: [web, mobile]
+    needs: [web, mobile, mobile-ios]
     if: always()
     runs-on: ubuntu-latest
     environment:
@@ -40,6 +43,11 @@ jobs:
         with:
           name: mobile-report
           path: _site/mobile
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: mobile-ios-report
+          path: _site/mobile-ios
 
       - name: Assemble Pages index
         run: cp docs/pages-index.html _site/index.html
