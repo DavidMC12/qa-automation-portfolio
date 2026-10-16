@@ -1,8 +1,13 @@
-name: Deploy reports to Pages
+name: CI
 
 on:
   push:
     branches: [main]
+  # The targets are third-party apps that can change without a commit here, so
+  # the suites also run weekly: the README badge then reflects today's state,
+  # not just the last push.
+  schedule:
+    - cron: '0 6 * * 1'
   workflow_dispatch:
 
 permissions:
