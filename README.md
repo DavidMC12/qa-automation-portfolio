@@ -150,3 +150,9 @@ with Xcode; they are exercised in CI on a `macos-15` runner.
 - API-level tests alongside the UI suites.
 - Accessibility checks (axe) on the web flows.
 - Sharding the Android flows across parallel emulators if the suite grows.
+
+## About
+
+Built by **David Madrid**, QA engineer focused on test automation —
+[GitHub](https://github.com/DavidMC12). Questions about the decisions here are welcome as
+issues.

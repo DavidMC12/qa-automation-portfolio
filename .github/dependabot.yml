@@ -14,6 +14,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Major bumps (TypeScript, @types/node, ...) are taken deliberately, together
+    # with the CI Node version, not as part of a weekly group.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       npm:
         patterns: ['*']
