@@ -17,6 +17,7 @@ mobile/artifacts/
 # Assistant and editor tooling (personal; the skills are third-party and restorable)
 .claude/skills/
 .claude/settings.local.json
+CLAUDE.md
 skills-lock.json
 .vscode/
 .idea/
