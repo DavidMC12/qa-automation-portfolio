@@ -8,6 +8,8 @@ export class InventoryPage {
   readonly cartBadge: Locator;
   readonly cartLink: Locator;
   readonly inventoryItems: Locator;
+  readonly inventoryList: Locator;
+  readonly itemPrices: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +17,8 @@ export class InventoryPage {
     this.cartBadge = page.locator('.shopping_cart_badge');
     this.cartLink = page.locator('.shopping_cart_link');
     this.inventoryItems = page.locator('.inventory_item');
+    this.inventoryList = page.locator('.inventory_list');
+    this.itemPrices = page.locator('.inventory_item_price');
   }
 
   private itemContainer(itemName: string): Locator {
@@ -27,11 +31,6 @@ export class InventoryPage {
 
   async removeFromCart(itemName: string) {
     await this.itemContainer(itemName).getByRole('button', { name: 'Remove' }).click();
-  }
-
-  async getCartBadgeCount(): Promise<number> {
-    if ((await this.cartBadge.count()) === 0) return 0;
-    return Number(await this.cartBadge.textContent());
   }
 
   async sortBy(option: SortOption) {

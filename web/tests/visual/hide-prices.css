@@ -1,0 +1,6 @@
+/* visual_user randomises every price on each load. visibility keeps the layout
+   box intact (unlike display:none), so only the glyphs disappear and the rest of
+   the card is compared pixel for pixel. */
+.inventory_item_price {
+  visibility: hidden !important;
+}
