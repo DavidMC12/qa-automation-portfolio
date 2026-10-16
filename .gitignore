@@ -9,6 +9,19 @@ web/blob-report/
 mobile/artifacts/
 *.apk
 
-# OS / editor
+# Secrets and local environment — nothing in this repo needs one, so none belongs here
+.env
+.env.*
+!.env.example
+
+# Assistant and editor tooling (personal; the skills are third-party and restorable)
+.claude/skills/
+.claude/settings.local.json
+CLAUDE.md
+skills-lock.json
+.vscode/
+.idea/
+
+# OS
 .DS_Store
 Thumbs.db
