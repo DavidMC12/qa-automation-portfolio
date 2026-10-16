@@ -1,0 +1,14 @@
+# The catalog is the default screen — no login needed to browse.
+# CatalogViewController.cellForItemAt copies each product name into the cell's
+# accessibilityLabel at runtime, so the real name is matchable as text while the
+# identifier stays "Product Name".
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- assertVisible: "Sauce Labs Backpack - Black"
+- assertVisible:
+    id: "Product Price"
+- scrollUntilVisible:
+    element:
+      text: "Test.allTheThings() T-Shirt (Red)"
+    direction: DOWN

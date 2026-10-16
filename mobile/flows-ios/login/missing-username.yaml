@@ -1,0 +1,15 @@
+# LoginViewController.LoginButton validates the username first, then the
+# password, and shows a UIAlertController for each — the iOS counterpart of the
+# Android locked-account negative path.
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "More-tab-item"
+- tapOn:
+    id: "LogOut-menu-item"
+- tapOn:
+    text: "Login"
+    index: 1
+- assertVisible: "Validation Error!"
+- assertVisible: "Username is required"

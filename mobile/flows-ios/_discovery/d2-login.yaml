@@ -1,0 +1,7 @@
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "More-tab-item"
+- tapOn:
+    id: "LogOut-menu-item"

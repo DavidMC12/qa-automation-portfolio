@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'mobile/**'
+      - '!mobile/flows-ios/**'
+      - '!mobile/scripts/*ios*'
       - '.github/workflows/mobile-tests.yml'
   workflow_call:
 

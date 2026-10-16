@@ -1,0 +1,81 @@
+name: Mobile iOS tests
+
+on:
+  pull_request:
+    paths:
+      - 'mobile/flows-ios/**'
+      - 'mobile/scripts/*ios*'
+      - 'mobile/scripts/generate-gallery.mjs'
+      - '.github/workflows/mobile-ios-tests.yml'
+  workflow_call:
+
+env:
+  IOS_APP_RELEASE_TAG: '2.3.0'
+  IOS_APP_ASSET: 'SauceLabs-Demo-App.Simulator.zip'
+
+jobs:
+  test:
+    # Apple's simulator only runs on macOS; public repos get these runners free.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Install mobile workspace dependencies
+        run: npm ci
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Maestro CLI
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Download pinned demo app (simulator build)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$IOS_APP_RELEASE_TAG" -R saucelabs/my-demo-app-ios -p "$IOS_APP_ASSET" -O ios-app.zip
+          unzip -q ios-app.zip -d ios-app
+
+      - name: Boot simulator and install the app
+        run: bash mobile/scripts/boot-ios-simulator.sh "ios-app/Payload/My Demo App.app"
+
+      - name: Run Maestro flows and record evidence
+        run: bash mobile/scripts/record-flows-ios.sh
+
+      - name: Generate evidence gallery
+        if: always()
+        working-directory: mobile
+        run: node scripts/generate-gallery.mjs artifacts/ios/report artifacts/ios/videos artifacts/ios/gallery "Mobile (iOS) — Maestro evidence"
+
+      - name: Upload iOS mobile report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mobile-ios-report
+          path: mobile/artifacts/ios/gallery
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload Maestro debug output
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: maestro-ios-debug
+          path: mobile/artifacts/ios/debug
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Fail job if any flow failed
+        run: |
+          if grep -rq '<failure' mobile/artifacts/ios/report; then
+            echo "One or more iOS Maestro flows failed — see the uploaded gallery for evidence."
+            exit 1
+          fi

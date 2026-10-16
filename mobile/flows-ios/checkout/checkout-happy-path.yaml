@@ -1,0 +1,53 @@
+# Checkout is 3 screens after a login that the cart forces (ProceedToCheckout
+# routes through LoginViewController when ST.isLogin is false):
+#   Shipping address -> "To Payment"; card details -> "Review Order";
+#   review -> "Place Order"; then CheckoutComplete.
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "Product Name"
+    index: 0
+- tapOn:
+    id: "AddToCart"
+- tapOn:
+    id: "Cart-tab-item"
+- tapOn:
+    id: "ProceedToCheckout"
+
+# Login (reached from the cart, so it continues to the shipping form).
+- tapOn: "bob@example.com"
+- tapOn:
+    text: "Login"
+    index: 1
+
+# 1. Shipping address
+- assertVisible: "Enter a shipping address"
+- tapOn: "Rebecca Winter"
+- inputText: "John Doe"
+- tapOn: "Mandorley 112"
+- inputText: "123 Main St"
+- tapOn: "Truro"
+- inputText: "San Francisco"
+- tapOn: "89750"
+- inputText: "94105"
+- tapOn: "United Kingdom"
+- inputText: "USA"
+- tapOn: "To Payment"
+
+# 2. Card details
+- assertVisible: "Enter a payment method"
+- tapOn: "Maxim Winter"
+- inputText: "John Doe"
+- tapOn: "3258 1265 7568 7896"
+- inputText: "4111111111111111"
+- tapOn: "03/25"
+- inputText: "12/28"
+- tapOn: "123"
+- inputText: "123"
+- tapOn: "Review Order"
+
+# 3. Review
+- assertVisible: "Review your order"
+- tapOn: "Place Order"
+- assertVisible: "Checkout Complete"

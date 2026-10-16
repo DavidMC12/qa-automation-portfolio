@@ -1,0 +1,25 @@
+# The app opens on the catalog; login lives behind the More tab. The menu entry
+# reads "Login" while logged out and "Log Out" afterwards, but its accessibility
+# identifier is "LogOut-menu-item" in both states.
+# Tapping a listed username fills both fields (the password is always 10203040).
+# NOTE: unlike the Android app, iOS never validates credentials, so there is no
+# locked-out account to test — see missing-username.yaml for the negative path.
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- tapOn:
+    id: "More-tab-item"
+- tapOn:
+    id: "LogOut-menu-item"
+- tapOn: "bob@example.com"
+- tapOn:
+    text: "Login"
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: "Catalog-screen"
+    timeout: 20000
+# Logged in: the same menu entry now offers to log out.
+- tapOn:
+    id: "More-tab-item"
+- assertVisible: "Log Out"
