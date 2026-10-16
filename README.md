@@ -138,9 +138,12 @@ with Xcode; they are exercised in CI on a `macos-15` runner.
 - **`visual_user` is asserted to differ, not to match** — it is a deliberately broken account, so
   the suite checks that it is flagged as different from the `standard_user` baseline. Prices are
   hidden with CSS (layout intact) because that account randomises them on every load.
-- **iOS has no locked-out scenario** — the iOS demo app never validates credentials (any
-  non-empty username and password logs in), so the Android locked-account flow becomes a
-  missing-username validation flow there.
+- **iOS differs from Android where the app differs** — the iOS demo app never validates
+  credentials (any non-empty username and password logs in), so the locked-account flow becomes
+  a missing-username validation flow. It also has no keyboard handling at all, so its keyboard
+  can never be closed and covers the checkout button: the iOS suite stops at shipping-form
+  validation instead of completing a purchase. Three workarounds were tried and are recorded in
+  [`mobile/README.md`](mobile/README.md).
 
 ## Roadmap
 
