@@ -122,11 +122,6 @@ Target app: [Sauce Labs "My Demo App" (iOS)](https://github.com/saucelabs/my-dem
   ones.
 - **There is no locked-out account.** `LoginViewController` accepts any non-empty username and
   password, so `login/missing-username.yaml` covers the validation path instead.
-- **Text fields are only reachable by placeholder.** The checkout fields have no identifier or
-  label; iOS exposes the placeholder as hint text (`Rebecca Winter`, `Mandorley 112`, ...), and
-  that is what `_shared/fill-field.yaml` taps. The keyboard is dismissed after every field —
-  otherwise it covers the rest of the form and the next tap lands on a key (one run produced
-  `123 Main St San Franciscod94105jUSAv` in a single address line).
 - **The menu entry's text is not in the accessibility tree.** "Login" / "Log Out" is only
   reachable through the identifier `LogOut-menu-item`, so the logged-in state is asserted by
   behaviour (login form gone; the same entry returns to it) rather than by reading the label.
@@ -138,6 +133,30 @@ Target app: [Sauce Labs "My Demo App" (iOS)](https://github.com/saucelabs/my-dem
   assert a specific one.
 - **Recording uses `xcrun simctl io recordVideo`**, wrapped around each flow and stopped with
   SIGINT (a plain kill leaves an unplayable file). One JUnit file is written per flow.
+
+### Checkout happy path is not automated on iOS
+
+The Android suite completes a purchase; the iOS one stops at form validation
+(`checkout/shipping-validation.yaml`). This is a property of the app, not a gap in effort:
+
+- The checkout fields have no identifier or label — iOS exposes only the placeholder, as hint
+  text — and the app has **no keyboard handling at all**: no `resignFirstResponder`, no
+  `textFieldShouldReturn`, no tap gesture, no `keyboardDismissMode`.
+- The soft keyboard therefore covers the lower half of the form **and** the fixed "To Payment" /
+  "Review Order" buttons, and it can never be closed. Maestro taps at an element's coordinates
+  whether or not it is covered, so a tap lands on a key — one run produced
+  `123 Main St San Franciscod94105jUSAv` in a single address line.
+
+Three ways around it were tried in CI and recorded here so they are not repeated:
+
+| Attempt | Result |
+|---|---|
+| `hideKeyboard` after each field | Fails: "Couldn't hide the keyboard" — there is no standard dismiss action to find |
+| Connect the host's hardware keyboard (`ConnectHardwareKeyboard` + `open -a Simulator`) | The software keyboard stayed up — the headless runner does not honour it |
+| iPad simulator, whose keyboard has a "hide keyboard" key | The XCTest driver did not start within its timeout |
+
+What remains untried are changes outside the suite: a build with a dismiss gesture, or a
+launch argument that pre-fills the form.
 
 ### Running locally
 
