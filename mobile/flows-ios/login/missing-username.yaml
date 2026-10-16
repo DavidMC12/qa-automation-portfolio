@@ -8,6 +8,8 @@ appId: com.saucelabs.mydemo.app.ios
     id: "More-tab-item"
 - tapOn:
     id: "LogOut-menu-item"
+# The login screen has three elements named "Login" in tree order: the page
+# header, the green button, and the button's own label. Index 1 is the button.
 - tapOn:
     text: "Login"
     index: 1

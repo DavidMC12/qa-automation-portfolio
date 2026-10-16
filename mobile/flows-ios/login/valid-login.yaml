@@ -1,6 +1,9 @@
 # The app opens on the catalog; login lives behind the More tab. The menu entry
-# reads "Login" while logged out and "Log Out" afterwards, but its accessibility
-# identifier is "LogOut-menu-item" in both states.
+# reads "Login" while logged out and "Log Out" afterwards, but neither string is
+# exposed to accessibility — the entry is only reachable by its identifier,
+# "LogOut-menu-item", in both states. The logged-in state therefore can't be read
+# from the menu, so it is asserted by behaviour: the login form is gone, and the
+# same entry sends us back to it.
 # Tapping a listed username fills both fields (the password is always 10203040).
 # NOTE: unlike the Android app, iOS never validates credentials, so there is no
 # locked-out account to test — see missing-username.yaml for the negative path.
@@ -12,6 +15,8 @@ appId: com.saucelabs.mydemo.app.ios
 - tapOn:
     id: "LogOut-menu-item"
 - tapOn: "bob@example.com"
+# The login screen has three elements named "Login" in tree order: the page
+# header, the green button, and the button's own label. Index 1 is the button.
 - tapOn:
     text: "Login"
     index: 1
@@ -19,7 +24,11 @@ appId: com.saucelabs.mydemo.app.ios
     visible:
       id: "Catalog-screen"
     timeout: 20000
-# Logged in: the same menu entry now offers to log out.
+- assertNotVisible: "Select a username from the list below"
+
+# Logged in, the same menu entry logs out and returns to the login form.
 - tapOn:
     id: "More-tab-item"
-- assertVisible: "Log Out"
+- tapOn:
+    id: "LogOut-menu-item"
+- assertVisible: "Select a username from the list below"

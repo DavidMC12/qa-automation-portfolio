@@ -1,6 +1,0 @@
-appId: com.saucelabs.mydemo.app.ios
----
-- runFlow: ../_shared/open-app.yaml
-- tapOn:
-    id: "Product Name"
-    index: 0

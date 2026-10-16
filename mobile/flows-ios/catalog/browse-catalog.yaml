@@ -6,9 +6,12 @@ appId: com.saucelabs.mydemo.app.ios
 ---
 - runFlow: ../_shared/open-app.yaml
 - assertVisible: "Sauce Labs Backpack - Black"
+- assertVisible: "Sauce Labs Backpack - Green"
 - assertVisible:
     id: "Product Price"
+# The catalogue opens with the six backpack colours; the onesie sits well below
+# the fold, so reaching it proves the list scrolls and keeps rendering cells.
 - scrollUntilVisible:
     element:
-      text: "Test.allTheThings() T-Shirt (Red)"
+      text: "Sauce Labs Onesie"
     direction: DOWN
