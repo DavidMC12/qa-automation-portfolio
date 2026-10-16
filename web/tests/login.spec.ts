@@ -11,6 +11,18 @@ test.describe('Login', () => {
     await expect(page).toHaveURL(/inventory\.html/);
   });
 
+  test('performance_glitch_user still reaches the inventory despite the delay', async ({
+    page,
+  }) => {
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(users.performanceGlitch, PASSWORD);
+
+    // The account is built to answer slowly; 15s is well above the default 5s
+    // assertion timeout, so a pass proves the delay is tolerated, not skipped.
+    await expect(page).toHaveURL(/inventory\.html/, { timeout: 15_000 });
+  });
+
   test('locked out user sees a locked-out error', async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();

@@ -8,8 +8,4 @@ export class CheckoutCompletePage {
     this.page = page;
     this.completeHeader = page.locator('.complete-header');
   }
-
-  async getConfirmationHeader() {
-    return this.completeHeader.textContent();
-  }
 }

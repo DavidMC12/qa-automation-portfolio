@@ -4,10 +4,12 @@
   "version": "1.0.0",
   "scripts": {
     "test": "playwright test",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
+    "@types/node": "^20.19.43",
     "typescript": "^5.6.0"
   }
 }
