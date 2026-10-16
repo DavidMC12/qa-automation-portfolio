@@ -1,9 +1,23 @@
 {
   "name": "qa-automation-portfolio",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
+  "description": "Cross-platform QA automation: Playwright for web, Maestro for Android and iOS, with CI evidence published to GitHub Pages",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidMC12/qa-automation-portfolio.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "web",
     "mobile"
-  ]
+  ],
+  "scripts": {
+    "test:web": "npm test --workspace web",
+    "test:unit": "npm test --workspace mobile",
+    "typecheck": "npm run typecheck --workspace web"
+  }
 }

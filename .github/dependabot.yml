@@ -1,0 +1,19 @@
+# Keeps the pinned GitHub Actions and npm packages current. Grouped and weekly so
+# it opens one PR per ecosystem instead of one per package.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm:
+        patterns: ['*']
