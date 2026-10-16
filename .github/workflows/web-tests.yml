@@ -11,9 +11,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -34,7 +34,7 @@ jobs:
 
       - name: Upload web report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: web-report
           path: web/playwright-report
@@ -44,7 +44,7 @@ jobs:
       # source of truth for a baseline that has to be regenerated on this OS.
       - name: Upload failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: web-test-results
           path: web/test-results
