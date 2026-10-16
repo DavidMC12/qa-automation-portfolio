@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { parseReport, buildGalleryHtml } from './generate-gallery.mjs';
+import { parseReport, buildGalleryHtml, loadReports } from './generate-gallery.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sampleXml = readFileSync(
@@ -61,4 +62,43 @@ test('buildGalleryHtml still joins classname/name when they differ', () => {
   const html = buildGalleryHtml(cases, []);
 
   assert.match(html, /<td>login-suite\/locked-account<\/td>/);
+});
+
+test('buildGalleryHtml keeps the default title when none is given', () => {
+  const html = buildGalleryHtml([], []);
+
+  assert.match(html, /<title>Mobile — Maestro evidence<\/title>/);
+  assert.match(html, /<h1>Mobile — Maestro evidence<\/h1>/);
+});
+
+test('buildGalleryHtml uses and escapes a custom title', () => {
+  const html = buildGalleryHtml([], [], { title: 'Mobile (iOS) <beta>' });
+
+  assert.match(html, /<title>Mobile \(iOS\) &lt;beta&gt;<\/title>/);
+  assert.match(html, /<h1>Mobile \(iOS\) &lt;beta&gt;<\/h1>/);
+});
+
+test('loadReports reads a single report file', () => {
+  const cases = loadReports(path.join(__dirname, 'fixtures', 'sample-report.xml'));
+
+  assert.deepEqual(
+    cases.map((c) => c.name),
+    ['valid-login', 'locked-account', 'checkout-happy-path']
+  );
+});
+
+test('loadReports merges every xml in a directory, in filename order', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'gallery-reports-'));
+  const suite = (name) =>
+    `<testsuites><testsuite name="s"><testcase name="${name}" classname="${name}" time="1" /></testsuite></testsuites>`;
+  writeFileSync(path.join(dir, 'b-flow.xml'), suite('b-flow'));
+  writeFileSync(path.join(dir, 'a-flow.xml'), suite('a-flow'));
+  writeFileSync(path.join(dir, 'notes.txt'), 'not a report');
+
+  const cases = loadReports(dir);
+
+  assert.deepEqual(
+    cases.map((c) => c.name),
+    ['a-flow', 'b-flow']
+  );
 });

@@ -1,5 +1,12 @@
 import { XMLParser } from 'fast-xml-parser';
-import { readFileSync, readdirSync, mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
+import {
+  readFileSync,
+  readdirSync,
+  statSync,
+  mkdirSync,
+  writeFileSync,
+  copyFileSync,
+} from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -24,6 +31,20 @@ export function parseReport(xmlString) {
   });
 }
 
+// A report path may be a single JUnit file or a directory of them: the iOS run
+// writes one file per flow (each flow is recorded individually), and the gallery
+// needs them merged into one table.
+export function loadReports(reportPath) {
+  const files = statSync(reportPath).isDirectory()
+    ? readdirSync(reportPath)
+        .filter((f) => f.endsWith('.xml'))
+        .sort()
+        .map((f) => path.join(reportPath, f))
+    : [reportPath];
+
+  return files.flatMap((file) => parseReport(readFileSync(file, 'utf8')));
+}
+
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;',
@@ -34,8 +55,13 @@ function escapeHtml(str) {
   })[c]);
 }
 
-export function buildGalleryHtml(testcases, videoFilenames) {
+export function buildGalleryHtml(
+  testcases,
+  videoFilenames,
+  { title = 'Mobile — Maestro evidence' } = {}
+) {
   const videoSet = new Set(videoFilenames);
+  const safeTitle = escapeHtml(title);
 
   const rows = testcases
     .map((tc) => {
@@ -68,7 +94,7 @@ export function buildGalleryHtml(testcases, videoFilenames) {
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Mobile — Maestro evidence</title>
+  <title>${safeTitle}</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 2rem; }
     table { border-collapse: collapse; width: 100%; }
@@ -81,7 +107,7 @@ export function buildGalleryHtml(testcases, videoFilenames) {
   </style>
 </head>
 <body>
-  <h1>Mobile — Maestro evidence</h1>
+  <h1>${safeTitle}</h1>
   <table>
     <thead>
       <tr><th>Flow</th><th>Status</th><th>Duration</th><th>Evidence</th></tr>
@@ -96,11 +122,14 @@ export function buildGalleryHtml(testcases, videoFilenames) {
 }
 
 function main() {
-  const [reportPath = 'artifacts/report.xml', videosDir = 'artifacts/videos', outDir = 'artifacts/gallery'] =
-    process.argv.slice(2);
+  const [
+    reportPath = 'artifacts/report.xml',
+    videosDir = 'artifacts/videos',
+    outDir = 'artifacts/gallery',
+    title,
+  ] = process.argv.slice(2);
 
-  const xml = readFileSync(reportPath, 'utf8');
-  const testcases = parseReport(xml);
+  const testcases = loadReports(reportPath);
 
   let videoFiles = [];
   try {
@@ -109,7 +138,7 @@ function main() {
     videoFiles = [];
   }
 
-  const html = buildGalleryHtml(testcases, videoFiles);
+  const html = buildGalleryHtml(testcases, videoFiles, title ? { title } : undefined);
 
   mkdirSync(path.join(outDir, 'videos'), { recursive: true });
   writeFileSync(path.join(outDir, 'index.html'), html);

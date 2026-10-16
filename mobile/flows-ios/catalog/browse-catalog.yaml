@@ -1,0 +1,20 @@
+# The catalog is the default screen — no login needed to browse.
+# CatalogViewController.cellForItemAt copies each product name into the cell's
+# accessibilityLabel at runtime, so the real name is matchable as text while the
+# identifier stays "Product Name".
+appId: com.saucelabs.mydemo.app.ios
+---
+- runFlow: ../_shared/open-app.yaml
+- assertVisible: "Sauce Labs Backpack - Black"
+- assertVisible: "Sauce Labs Backpack - Green"
+- assertVisible:
+    id: "Product Price"
+# The catalogue opens with the six backpack colours; the bike light follows them,
+# below the fold, so reaching it proves the list scrolls and keeps rendering
+# cells. The list is long and iOS swipes in small steps: the default 20s timeout
+# expired just as a product much further down came into view.
+- scrollUntilVisible:
+    element:
+      text: "Sauce Labs Bike Light"
+    direction: DOWN
+    timeout: 40000
