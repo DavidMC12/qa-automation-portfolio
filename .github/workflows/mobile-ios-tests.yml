@@ -18,9 +18,9 @@ jobs:
     # Apple's simulator only runs on macOS; public repos get these runners free.
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload iOS mobile report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: mobile-ios-report
           path: mobile/artifacts/ios/gallery
@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload Maestro debug output
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: maestro-ios-debug
           path: mobile/artifacts/ios/debug
