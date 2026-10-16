@@ -18,9 +18,10 @@ traces, per-flow videos) for free, with no third-party accounts.
   deliberately broken `visual_user` *is* flagged — the check goes red if the diff ever goes blind.
 - **Evidence, not just a green tick.** Failing web tests keep screenshot, video and trace;
   every mobile flow is recorded and published as a gallery.
-- **Measured, not guessed, pipeline work.** The Android job's time was profiled before being
-  touched: video re-rendering was ~46 of 51 minutes, so flows are now recorded in the same
-  single execution. The reasoning is written down in [`mobile/README.md`](mobile/README.md).
+- **Measured, not guessed, pipeline work.** The Android job was profiled before it was touched:
+  re-rendering the videos took ~46 of its 51 minutes while the flows themselves took ~3.5. Each
+  flow is now recorded during its single execution, and the job runs in **7 minutes**. The
+  reasoning is written down in [`mobile/README.md`](mobile/README.md).
 - **Real debugging write-ups.** [`mobile/README.md`](mobile/README.md) documents the traps found
   while stabilising the mobile suite (soft keyboard swallowing scroll gestures, `hideKeyboard`
   being a Back press on Android, cold-emulator launches) and how each was diagnosed.
