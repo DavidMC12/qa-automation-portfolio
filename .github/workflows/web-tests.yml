@@ -16,12 +16,17 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Typecheck
+        working-directory: web
+        run: npm run typecheck
+
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Playwright tests
         working-directory: web
@@ -34,3 +39,14 @@ jobs:
           name: web-report
           path: web/playwright-report
           retention-days: 30
+
+      # Expected/actual/diff images of a failing visual comparison. Also the
+      # source of truth for a baseline that has to be regenerated on this OS.
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: web-test-results
+          path: web/test-results
+          retention-days: 7
+          if-no-files-found: ignore
